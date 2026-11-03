@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Billboard Graphic",
+    "section": "",
+    "text": "library(tidyverse)\n\n\ndata(\"billboard\", package = \"tidyr\")\n\nbillboard_long &lt;- billboard |&gt;\n  pivot_longer(\n    cols = starts_with(\"wk\"),\n    names_to = \"week\",\n    names_prefix = \"wk\",\n    names_transform = list(week = as.integer),\n    values_to = \"rank\",\n    values_drop_na = TRUE\n  ) |&gt;\n  mutate(chart_date = as.Date(date.entered) + weeks(week - 1))\n\njuly_top_five &lt;- billboard_long |&gt;\n  filter(chart_date &lt;= as.Date(\"2000-07-01\")) |&gt;\n  group_by(artist, track) |&gt;\n  slice_max(chart_date, n = 1, with_ties = FALSE) |&gt;\n  ungroup() |&gt;\n  slice_min(rank, n = 5, with_ties = FALSE) |&gt;\n  transmute(artist, track, song_artist = paste0(track, \" (\", artist, \")\"))\n\nbillboard_long |&gt;\n  inner_join(july_top_five, by = c(\"artist\", \"track\")) |&gt;\n  filter(chart_date &gt;= as.Date(\"2000-01-01\"),\n         chart_date &lt;= as.Date(\"2001-01-01\")) |&gt;\n  ggplot(aes(x = chart_date, y = rank, color = song_artist, group = song_artist)) +\n  geom_line(linewidth = 1.2, alpha = 0.85) +\n  geom_point(size = 2) +\n  scale_y_reverse(limits = c(100, 1)) +\n  scale_x_date(\n    date_breaks = \"1 month\",\n    date_labels = \"%b\",\n    limits = as.Date(c(\"2000-01-01\", \"2001-01-01\"))\n  ) +\n  scale_color_manual(values = c(\"#56D6C9\", \"#FF6B6B\", \"#45B7D1\", \"#B794F4\", \"#FFCA58\")) +\n  labs(\n    title = \"Billboard Top 100: Top 5 Songs in July 2000\",\n    subtitle = \"Rank changes throughout 2000\",\n    x = \"Month\",\n    y = \"Chart position\",\n    color = \"Song (Artist)\"\n  ) +\n  theme_minimal(base_size = 13) +\n  theme(\n    plot.background = element_rect(fill = \"#111827\", color = NA),\n    panel.background = element_rect(fill = \"#111827\", color = NA),\n    panel.grid.major = element_line(color = \"#374151\"),\n    panel.grid.minor = element_blank(),\n    text = element_text(color = \"white\"),\n    plot.title = element_text(face = \"bold\", color = \"#56D6C9\", hjust = 0.5),\n    plot.subtitle = element_text(color = \"#D1D5DB\", hjust = 0.5),\n    legend.position = \"bottom\",\n    legend.title = element_text(face = \"bold\")\n  ) +\n  guides(color = guide_legend(nrow = 2))"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  }
+]
