@@ -2,4 +2,8 @@
 title: "About"
 ---
 
-About this site
+## About Me
+
+My name is **Mayah Torres**. I am a freshman currently attending *New College of Florida*.
+
+[Kane’s Free Data Science Bootcamp](https://bootcamp.davidkane.info)
