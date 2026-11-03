@@ -5,62 +5,9 @@ title: "Billboard Graphic"
 ```{r}
 #| message: false
 library(tidyverse)
+library(knitr)
 ```
 
 ```{r}
-data("billboard", package = "tidyr")
-
-billboard_long <- billboard |>
-  pivot_longer(
-    cols = starts_with("wk"),
-    names_to = "week",
-    names_prefix = "wk",
-    names_transform = list(week = as.integer),
-    values_to = "rank",
-    values_drop_na = TRUE
-  ) |>
-  mutate(chart_date = as.Date(date.entered) + weeks(week - 1))
-
-july_top_five <- billboard_long |>
-  filter(chart_date <= as.Date("2000-07-01")) |>
-  group_by(artist, track) |>
-  slice_max(chart_date, n = 1, with_ties = FALSE) |>
-  ungroup() |>
-  slice_min(rank, n = 5, with_ties = FALSE) |>
-  transmute(artist, track, song_artist = paste0(track, " (", artist, ")"))
-
-billboard_long |>
-  inner_join(july_top_five, by = c("artist", "track")) |>
-  filter(chart_date >= as.Date("2000-01-01"),
-         chart_date <= as.Date("2001-01-01")) |>
-  ggplot(aes(x = chart_date, y = rank, color = song_artist, group = song_artist)) +
-  geom_line(linewidth = 1.2, alpha = 0.85) +
-  geom_point(size = 2) +
-  scale_y_reverse(limits = c(100, 1)) +
-  scale_x_date(
-    date_breaks = "1 month",
-    date_labels = "%b",
-    limits = as.Date(c("2000-01-01", "2001-01-01"))
-  ) +
-  scale_color_manual(values = c("#56D6C9", "#FF6B6B", "#45B7D1", "#B794F4", "#FFCA58")) +
-  labs(
-    title = "Billboard Top 100: Top 5 Songs in July 2000",
-    subtitle = "Rank changes throughout 2000",
-    x = "Month",
-    y = "Chart position",
-    color = "Song (Artist)"
-  ) +
-  theme_minimal(base_size = 13) +
-  theme(
-    plot.background = element_rect(fill = "#111827", color = NA),
-    panel.background = element_rect(fill = "#111827", color = NA),
-    panel.grid.major = element_line(color = "#374151"),
-    panel.grid.minor = element_blank(),
-    text = element_text(color = "white"),
-    plot.title = element_text(face = "bold", color = "#56D6C9", hjust = 0.5),
-    plot.subtitle = element_text(color = "#D1D5DB", hjust = 0.5),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold")
-  ) +
-  guides(color = guide_legend(nrow = 2))
+include_graphics("billboard.png")
 ```
